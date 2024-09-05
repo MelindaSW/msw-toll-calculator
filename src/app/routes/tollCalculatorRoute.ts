@@ -1,13 +1,15 @@
-import express, { Request, Response, Router } from "express";
+import express, { Request, Response, Router } from 'express';
+import { TollCalculatorController } from '../controllers/tollCalculatorController';
 
 const router = Router();
 router.use(express.json());
+const controller = new TollCalculatorController();
 
 /**
  * @swagger
  * tags:
  *  - name: Tollcalculator
- *    description: Endpoint calculating toll fees for different vehicles
+ *    description: Endpoint for calculating toll fees for different vehicles
  */
 
 /**
@@ -41,8 +43,8 @@ router.use(express.json());
 
 /**
  * @swagger
- * /api/getTollFee:
- *   get:
+ * /api/calculateTollFee:
+ *   post:
  *     summary: Get total toll fee
  *     description: Calculates the total toll fee based on the provided vehicle type and timestamps
  *     tags: [Tollcalculator]
@@ -67,13 +69,13 @@ router.use(express.json());
  *               $ref: '#/components/schemas/ErrorResponse'
  *       '500':
  *         description: Internal server error
- *           content:
- *             application/json:
- *               schema:
- *                 $ref: '#/components/schemas/ErrorResponse'
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.get("/getTollFee", (req: Request, res: Response): void => {
-  res.send("hello toll");
+router.post('/calculateTollFee', (req: Request, res: Response): void => {
+  res.send('hello toll');
 });
 
 export default router;

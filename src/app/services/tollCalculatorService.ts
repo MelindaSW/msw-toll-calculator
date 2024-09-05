@@ -1,0 +1,3 @@
+interface ITollCalculatorService {
+  getToll: () => string;
+}

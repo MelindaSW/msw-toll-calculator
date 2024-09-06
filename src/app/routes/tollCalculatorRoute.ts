@@ -1,15 +1,22 @@
 import express, { Request, Response, Router } from 'express';
 import { TollCalculatorController } from '../controllers/tollCalculatorController';
+import { TollCalculatorService } from '../services/tollCalculatoServiceImplementation';
 
 const router = Router();
 router.use(express.json());
-const controller = new TollCalculatorController();
+const controller = new TollCalculatorController(new TollCalculatorService());
+
+router.use('/calculateTollFee', (req, res, next) => {
+  // validate request body, vehicles should be one of the correct types and the array of dates should not be empty or contain non Date types
+  console.log('Request URL:', req.originalUrl);
+  next();
+});
 
 /**
  * @swagger
  * tags:
  *  - name: Tollcalculator
- *    description: Endpoint for calculating toll fees for different vehicles
+ *    description: Endpoint for calculating toll fees based on date and time of passing, and type of vehicle
  */
 
 /**
@@ -28,10 +35,14 @@ const controller = new TollCalculatorController();
  *     TollFeeResponse:
  *       type: object
  *       properties:
- *         status:
- *           type: number
  *         totalTollFee:
  *           type: number
+ *         forVehicle:
+ *           type: string
+ *         forDates:
+ *           type: array
+ *           items:
+ *             type: string
  *     ErrorResponse:
  *       type: object
  *       properties:
@@ -75,7 +86,7 @@ const controller = new TollCalculatorController();
  *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.post('/calculateTollFee', (req: Request, res: Response): void => {
-  res.send('hello toll');
+  controller.calculateTollFee(req, res);
 });
 
 export default router;

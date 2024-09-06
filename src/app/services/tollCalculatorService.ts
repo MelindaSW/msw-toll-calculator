@@ -1,3 +1,3 @@
-interface ITollCalculatorService {
-  getToll: () => string;
+export interface ITollCalculatorService {
+  getToll: (vehicle: string, dates: Date[]) => number;
 }

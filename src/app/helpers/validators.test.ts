@@ -12,6 +12,26 @@ import {
   tollFreeVehicle
 } from '../types/vehicleTypes';
 
+const swedishNationalHolidays2024 = [
+  '2024-01-01', // New years day
+  '2024-01-06', // Epiphany
+  '2024-03-29', // Long friday
+  '2024-03-30', // Easter eve
+  '2024-03-31', // Easter day
+  '2024-04-01', // Easter monday
+  '2024-05-01', // First of May
+  '2024-05-09', // Ascension day
+  '2024-05-19', // Pentecost
+  '2024-06-06', // National day
+  '2024-06-21', // Midsummer eve
+  '2024-06-22', // Midsummer day
+  '2024-11-02', // All saints eve
+  '2024-12-24', // Christmas eve
+  '2024-12-25', // Christmas day
+  '2024-12-26', // Boxing day
+  '2024-12-31' // New years eve
+];
+
 describe('Vehicle validator ', () => {
   test('vehicleIsValid should return true when the parameter is of type Vehicle', () => {
     allVehicles.forEach((v) => {
@@ -20,7 +40,7 @@ describe('Vehicle validator ', () => {
   });
 
   test('vehicleIsValid should return false when the parameter is not of type vehicle', () => {
-    expect(vehicleIsValid('boat')).toBe(false);
+    expect(vehicleIsValid('Boat')).toBe(false);
   });
 
   test('vehicleIsTollFree should return true when the parameter is of type TollFreeVehicle', () => {
@@ -30,7 +50,7 @@ describe('Vehicle validator ', () => {
   });
 
   test('vehicleIsTollFreeVehicle should return false when the parameter is not of type TollFreeVehicle', () => {
-    expect(vehicleIsTollFree('boat')).toBe(false);
+    expect(vehicleIsTollFree('Boat')).toBe(false);
   });
 
   test('vehicleIsTolled should return true when the parameter is of type TolledVehicle', () => {
@@ -40,8 +60,8 @@ describe('Vehicle validator ', () => {
   });
 
   test('vehicleIsTolled should return false when the parameter is not of type TolledVehicle', () => {
-    expect(vehicleIsTolled('boat')).toBe(false);
-    expect(vehicleIsTolled('motorbike')).toBe(false);
+    expect(vehicleIsTolled('Boat')).toBe(false);
+    expect(vehicleIsTolled('Motorbike')).toBe(false);
   });
 });
 
@@ -63,25 +83,6 @@ describe('Weekend validator ', () => {
 
 describe('Holiday validator ', () => {
   test('dateIsTollFreeHoliday should return true when the parameter is on a holiday', () => {
-    const swedishNationalHolidays2024 = [
-      '2024-01-01', // New years day
-      '2024-01-06', // Epiphany
-      '2024-03-29', // Long friday
-      '2024-03-30', // Easter eve
-      '2024-03-31', // Easter day
-      '2024-04-01', // Easter monday
-      '2024-05-01', // First of May
-      '2024-05-09', // Ascension day
-      '2024-05-19', // Pentecost
-      '2024-06-06', // National day
-      '2024-06-21', // Midsummer eve
-      '2024-06-22', // Midsummer day
-      '2024-11-02', // All saints eve
-      '2024-12-24', // Christmas eve
-      '2024-12-25', // Christmas day
-      '2024-12-26', // Boxing day
-      '2024-12-31' // New years eve
-    ];
     swedishNationalHolidays2024.forEach((date) => {
       expect(dateIsTollFreeHoliday(new Date(date))).toBe(true);
     });

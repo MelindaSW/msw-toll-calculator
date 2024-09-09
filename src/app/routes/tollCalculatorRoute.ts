@@ -7,8 +7,9 @@ router.use(express.json());
 const controller = new TollCalculatorController(new TollCalculatorService());
 
 router.use('/calculateTollFee', (req, res, next) => {
-  // validate request body, vehicles should be one of the correct types and the array of dates should not be empty or contain non Date types
-  console.log('Request URL:', req.originalUrl);
+  // validate request body, vehicles should
+  // the timestamps should not be wrong format - make regex check: YYYY-MM-DDTHH:mm:ss.ssZ
+  // the array of dates should all be within one day
   next();
 });
 
@@ -16,7 +17,7 @@ router.use('/calculateTollFee', (req, res, next) => {
  * @swagger
  * tags:
  *  - name: Tollcalculator
- *    description: Endpoint for calculating toll fees based on date and time of passing, and type of vehicle
+ *    description: Endpoint for calculating toll fees based on date and time of passing. Vehicle type should be one of Car, Motorbike, Diplomat, Tractor, Foreign, Military or Emergency
  */
 
 /**
@@ -28,10 +29,12 @@ router.use('/calculateTollFee', (req, res, next) => {
  *       properties:
  *         vehicle:
  *           type: string
+ *           example: 'Car'
  *         dates:
  *           type: array
  *           items:
- *             type: string
+ *             type: date-time
+ *             example: '2022-12-08T07:32:28Z, 2022-12-08T08:30:20Z, 2022-12-08T16:45:02Z'
  *     TollFeeResponse:
  *       type: object
  *       properties:
@@ -39,10 +42,12 @@ router.use('/calculateTollFee', (req, res, next) => {
  *           type: number
  *         forVehicle:
  *           type: string
+ *           example: 'Car'
  *         forDates:
  *           type: array
  *           items:
- *             type: string
+ *             type: date-time
+ *             example: '2022-12-08T07:32:28Z, 2022-12-08T08:30:20Z, 2022-12-08T16:45:02Z'
  *     ErrorResponse:
  *       type: object
  *       properties:
@@ -56,8 +61,8 @@ router.use('/calculateTollFee', (req, res, next) => {
  * @swagger
  * /api/calculateTollFee:
  *   post:
- *     summary: Get total toll fee
- *     description: Calculates the total toll fee based on the provided vehicle type and timestamps
+ *     summary: Get the total toll fee
+ *     description: Calculates the total toll fee based on the provided vehicle type and an array with the timestamps for all the passes during one day.
  *     tags: [Tollcalculator]
  *     requestBody:
  *       required: true

@@ -1,20 +1,20 @@
-const tolledVehicle = ['car'] as const;
+const tolledVehicle = ['Car'] as const;
 const tollFreeVehicle = [
-  'tractor',
-  'diplomat',
-  'foreign',
-  'military',
-  'emergency',
-  'motorbike'
+  'Tractor',
+  'Diplomat',
+  'Foreign',
+  'Military',
+  'Emergency',
+  'Motorbike'
 ] as const;
 const allVehicles = [
-  'car',
-  'tractor',
-  'diplomat',
-  'foreign',
-  'military',
-  'emergency',
-  'motorbike'
+  'Car',
+  'Tractor',
+  'Diplomat',
+  'Foreign',
+  'Military',
+  'Emergency',
+  'Motorbike'
 ] as const;
 
 type TolledVehicle = (typeof tolledVehicle)[number];

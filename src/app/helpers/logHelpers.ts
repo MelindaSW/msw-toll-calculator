@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request } from 'express';
 
 export const logIncomingRequest = (req: Request) => {
   const time = new Date(Date.now()).toString();

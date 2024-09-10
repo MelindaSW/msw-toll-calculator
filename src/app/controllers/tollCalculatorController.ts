@@ -6,7 +6,7 @@ export class TollCalculatorController {
   constructor(private tollCalculatorService: ITollCalculatorService) {}
 
   calculateTollFee(req: Request, res: Response) {
-    const fee = this.tollCalculatorService.getToll(
+    const fee = this.tollCalculatorService.getTollFee(
       req.body.vehicle,
       req.body.dates
     );

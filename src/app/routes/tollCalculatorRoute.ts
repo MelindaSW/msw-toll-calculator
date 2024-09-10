@@ -1,15 +1,28 @@
 import express, { Request, Response, Router } from 'express';
 import { TollCalculatorController } from '../controllers/tollCalculatorController';
 import { TollCalculatorService } from '../services/tollCalculatoServiceImplementation';
+import { vehicleIsValid } from "../helpers/validators";
+import { allVehicles } from "../types/vehicleTypes";
+import { isCorrectDateTimeFormat } from "../helpers/dateTimeHelpers";
 
 const router = Router();
 router.use(express.json());
 const controller = new TollCalculatorController(new TollCalculatorService());
 
-router.use('/calculateTollFee', (req, res, next) => {
-  // validate request body, vehicles should
-  // the timestamps should not be wrong format - make regex check: YYYY-MM-DDTHH:mm:ss.ssZ
-  // the array of dates should all be within one day
+router.use("/calculateTollFee", (req, res, next) => {
+  if (!vehicleIsValid(req.body.vehicle)) {
+    throw new Error(
+      `The vehicle is not valid. It should be one of ${allVehicles.join(", ")}.`
+    );
+  }
+
+  req.body.dates.forEach((date: string) => {
+    if (!isCorrectDateTimeFormat(date)) {
+      throw new Error(
+        `Provided timestamp is not correct format. They should be one of following: YYYY-MM-DDTHH:mm:ss.ssZ or YYYY-MM-DDTHH:mm:ssZ`
+      );
+    }
+  });
   next();
 });
 

@@ -4,6 +4,7 @@
   "description": "Toll calculator REST api",
   "main": "index.ts",
   "scripts": {
+    "build": "tsc",
     "dev": "nodemon src/app/index.ts",
     "test": "jest"
   },

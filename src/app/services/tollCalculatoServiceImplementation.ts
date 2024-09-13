@@ -1,3 +1,4 @@
+import { incrementHours, timeIsWithinRange } from '../utils/dateAndTime';
 import {
   dateIsOnWeekend,
   dateIsTollFreeHoliday,
@@ -46,7 +47,7 @@ export class TollCalculatorService implements ITollCalculatorService {
 
     let currentFee = this.calculateFeeForTime(passes[0]);
     let previousFee = currentFee;
-    let sameHrLimit = this.getNewHrLimit(passes[0]);
+    let sameHrLimit = incrementHours(passes[0], 1);
     let totalFee = currentFee;
 
     for (let i = 1; i < passes.length; i++) {
@@ -59,7 +60,7 @@ export class TollCalculatorService implements ITollCalculatorService {
       if (isWithinSameHour) {
         totalFee += currentFee > previousFee ? currentFee : 0;
       } else {
-        sameHrLimit = this.getNewHrLimit(currentTime);
+        sameHrLimit = incrementHours(currentTime, 1);
         totalFee += currentFee;
         previousFee = currentFee;
       }
@@ -69,12 +70,6 @@ export class TollCalculatorService implements ITollCalculatorService {
 
     return totalFee;
   }
-
-  private getNewHrLimit = (date: Date) => {
-    let newLimit = new Date(date);
-    newLimit.setHours(date.getHours() + 1);
-    return newLimit;
-  };
 
   private checkIfNoFee = (vehicle: string, passes: Date[]) => {
     return (
@@ -92,7 +87,7 @@ export class TollCalculatorService implements ITollCalculatorService {
     for (const [keyFee, valueRanges] of Object.entries(this.timeRanges)) {
       valueRanges.forEach((range) => {
         if (
-          this.timeIsWithinRange(timeStamp, {
+          timeIsWithinRange(timeStamp, {
             from: new Date(`${date}${range.from}Z`),
             to: new Date(`${date}${range.to}Z`)
           })
@@ -103,15 +98,5 @@ export class TollCalculatorService implements ITollCalculatorService {
     }
 
     return fee;
-  };
-
-  private timeIsWithinRange = (
-    timeStamp: Date,
-    range: { from: Date; to: Date }
-  ) => {
-    return (
-      timeStamp.getTime() >= range.from.getTime() &&
-      timeStamp.getTime() <= range.to.getTime()
-    );
   };
 }

@@ -14,11 +14,11 @@ export class TollCalculatorService implements ITollCalculatorService {
   private readonly timeRanges = {
     [this.noFee]: [
       { from: '00:00:00', to: '05:59:59' },
-      { from: '18:00:00', to: '23:59:59' }
+      { from: '18:30:00', to: '23:59:59' }
     ],
     [this.rushHourFee]: [
       { from: '07:00:00', to: '07:59:59' },
-      { from: '15:30:00', to: '16:59:59' } // TODO: Assuming this rush hour range is not starting at 15:00, as in the previous implementation which overlaps with one of the medium fee ranges. Making it 15:30 here for now. Will need a verification if it is a correct assumption.
+      { from: '15:30:00', to: '16:59:59' }
     ],
     [this.mediumFee]: [
       { from: '06:30:00', to: '06:59:59' },
@@ -35,9 +35,9 @@ export class TollCalculatorService implements ITollCalculatorService {
 
   constructor() {}
 
-  getTollFee(vehicle: string, passByTimeStamps: string[]): number {
-    const passes = passByTimeStamps
-      .map((dateTime: string) => new Date(dateTime))
+  getTollFee(vehicle: string, passingDateTimes: string[]): number {
+    const passes = passingDateTimes
+      .map((d: string) => new Date(d))
       .sort((a: Date, b: Date) => {
         return a.getTime() - b.getTime();
       });
@@ -109,7 +109,6 @@ export class TollCalculatorService implements ITollCalculatorService {
     timeStamp: Date,
     range: { from: Date; to: Date }
   ) => {
-    console.log({ timeStamp, range });
     return (
       timeStamp.getTime() >= range.from.getTime() &&
       timeStamp.getTime() <= range.to.getTime()

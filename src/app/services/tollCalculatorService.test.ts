@@ -53,7 +53,7 @@ describe('TollCalculator should return the correct fee for single time stamps at
     );
   });
 
-  test('surrounding rush hour', () => {
+  test('around rush hour', () => {
     expect(tollCalculator.getTollFee('Car', ['2024-09-09T06:30:30Z'])).toBe(
       mediumFee
     );
@@ -107,23 +107,33 @@ describe('Tollcalculator should return the correct fee for an array of timestamp
         '2024-09-09T08:58:00Z'
       ])
     ).toBe(rushHourFee);
+
+    expect(
+      tollCalculator.getTollFee('Car', [
+        '2024-09-09T07:00:00Z',
+        '2024-09-09T07:15:25Z',
+        '2024-09-09T17:59:00Z',
+        '2024-09-09T18:01:00Z',
+        '2024-09-09T18:37:00Z'
+      ])
+    ).toBe(31);
   });
 
   test('spread over one day', () => {
     expect(
       tollCalculator.getTollFee('Car', [
-        '2024-09-09T07:58:00Z', // 18
-        '2024-09-09T15:15:25Z', // 13
-        '2024-09-09T18:15:00Z' // 8
+        '2024-09-09T07:58:00Z',
+        '2024-09-09T15:15:25Z',
+        '2024-09-09T18:15:00Z'
       ])
     ).toBe(39);
 
     expect(
       tollCalculator.getTollFee('Car', [
-        '2024-09-09T05:00:00Z', // 0
-        '2024-09-09T06:30:00Z', // 13
-        '2024-09-09T16:20:25Z', // 18
-        '2024-09-09T18:45:00Z' // 0
+        '2024-09-09T05:00:00Z',
+        '2024-09-09T06:30:00Z',
+        '2024-09-09T16:20:25Z',
+        '2024-09-09T18:45:00Z'
       ])
     ).toBe(31);
   });
@@ -131,13 +141,13 @@ describe('Tollcalculator should return the correct fee for an array of timestamp
   test('where sum is larger than maximum fee, then return the max fee', () => {
     expect(
       tollCalculator.getTollFee('Car', [
-        '2024-09-09T07:05:00Z', // 18
-        '2024-09-09T15:15:25Z', // 18
-        '2024-09-09T08:15:00Z', // 13
-        '2024-09-09T06:35:00Z', // 13
-        '2024-09-09T15:15:00Z', // 13
-        '2024-09-09T17:15:00Z', // 13
-        '2024-09-09T06:01:00Z' // 8
+        '2024-09-09T07:05:00Z',
+        '2024-09-09T15:15:25Z',
+        '2024-09-09T08:15:00Z',
+        '2024-09-09T06:35:00Z',
+        '2024-09-09T15:15:00Z',
+        '2024-09-09T17:15:00Z',
+        '2024-09-09T06:01:00Z'
       ])
     ).toBe(maximumFee);
   });

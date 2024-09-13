@@ -10,11 +10,13 @@ const router = Router();
 router.use(express.json());
 const controller = new TollCalculatorController(new TollCalculatorService());
 
-router.use('/calculateTollFee', (req, res, next) => {
+router.use('/calculatetollfee', (req, res, next) => {
   const isNotValidVehicle = !vehicleIsValid(req.body.vehicle);
-  const isNotValidTimeStampFormat = req.body.dates.some(
-    (date: string) => !isCorrectDateTimeFormat(date)
-  );
+  const isNotValidTimeStampFormat =
+    req.body.dates.length > 0
+      ? req.body.dates.some((date: string) => !isCorrectDateTimeFormat(date))
+      : false;
+
   const errorResponse: ErrorResponseBody = {
     requestUrl: req.url,
     status: 422,
@@ -44,7 +46,7 @@ router.use('/calculateTollFee', (req, res, next) => {
  * @swagger
  * tags:
  *  - name: Tollcalculator
- *    description: Endpoint for calculating toll fees based on date and time of passing. Vehicle type should be one of Car, Motorbike, Diplomat, Tractor, Foreign, Military or Emergency. Timestamp should be of format YYYY-MM-DDTHH:mm:ssZ.
+ *    description: Api for calculating toll fees based on date and time of passing.
  */
 
 /**
@@ -60,9 +62,8 @@ router.use('/calculateTollFee', (req, res, next) => {
  *         dates:
  *           type: array
  *           items:
- *             minItems: 1
  *             type: date-time
- *             example: '2022-12-08T07:32:28Z, 2022-12-08T08:30:20Z, 2022-12-08T16:45:02Z'
+ *           example: ["2022-12-08T07:32:28Z","2022-12-08T08:30:20Z","2022-12-08T16:45:02Z"]
  *     TollFeeResponse:
  *       type: object
  *       properties:
@@ -75,10 +76,12 @@ router.use('/calculateTollFee', (req, res, next) => {
  *           type: array
  *           items:
  *             type: date-time
- *             example: '2022-12-08T07:32:28Z, 2022-12-08T08:30:20Z, 2022-12-08T16:45:02Z'
+ *           example: ["2022-12-08T07:32:28Z","2022-12-08T08:30:20Z","2022-12-08T16:45:02Z"]
  *     ErrorResponse:
  *       type: object
  *       properties:
+ *         requestUrl:
+ *           type: string
  *         status:
  *           type: number
  *         message:
@@ -90,7 +93,7 @@ router.use('/calculateTollFee', (req, res, next) => {
  * /api/calculateTollFee:
  *   post:
  *     summary: Get the total toll fee
- *     description: Calculates the total toll fee based on the provided vehicle type and an array with the timestamps for all the passes during one day.
+ *     description: Calculates the total toll fee based on the provided vehicle type and an array with the timestamps for all the passes during one day. Vehicle type should be one of Car, Motorbike, Diplomat, Tractor, Foreign, Military or Emergency. Timestamp should be of format YYYY-MM-DDTHH:mm:ssZ.
  *     tags: [Tollcalculator]
  *     requestBody:
  *       required: true
@@ -105,8 +108,8 @@ router.use('/calculateTollFee', (req, res, next) => {
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/TollFeeResponse'
- *       '404':
- *         description: Toll fee could not be calculated
+ *       '422':
+ *         description: Invalid request body data
  *         content:
  *           application/json:
  *             schema:
@@ -118,7 +121,7 @@ router.use('/calculateTollFee', (req, res, next) => {
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post('/calculateTollFee', (req: Request, res: Response): void => {
+router.post('/calculatetollfee', (req: Request, res: Response): void => {
   controller.calculateTollFee(req, res);
 });
 

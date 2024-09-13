@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { TollCalculatorResponse } from '../types/responseTypes';
 import { ITollCalculatorService } from '../services/tollCalculatorService';
+import { logOutgoingResponse } from '../utils/logging';
 
 export class TollCalculatorController {
   constructor(private tollCalculatorService: ITollCalculatorService) {}
@@ -15,6 +16,7 @@ export class TollCalculatorController {
       forVehicle: req.body.vehicle,
       forDates: req.body.dates
     };
+    logOutgoingResponse(req.url, response);
     res.status(200);
     res.send(response);
   }

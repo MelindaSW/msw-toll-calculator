@@ -1,6 +1,17 @@
-import { Request } from 'express';
+import { Request, Response } from 'express';
+import { TollCalculatorResponse } from '../types/responseTypes';
 
-export const logIncomingRequest = (req: Request) => {
+const logIncomingRequest = (req: Request) => {
   const time = new Date(Date.now()).toString();
   console.log(req.method, req.hostname, req.path, time);
 };
+
+const logOutgoingResponse = (
+  url: string,
+  responseBody: TollCalculatorResponse
+) => {
+  const time = new Date(Date.now()).toString();
+  console.log(time, url, responseBody);
+};
+
+export { logIncomingRequest, logOutgoingResponse };

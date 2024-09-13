@@ -2,6 +2,7 @@ import { describe, expect, test } from '@jest/globals';
 import {
   dateIsOnWeekend,
   dateIsTollFreeHoliday,
+  isCorrectDateTimeFormat,
   vehicleIsTolled,
   vehicleIsTollFree,
   vehicleIsValid
@@ -98,5 +99,15 @@ describe('Holiday validator ', () => {
     expect(dateIsTollFreeHoliday(new Date('2024-08-11'))).toBe(false);
     expect(dateIsTollFreeHoliday(new Date('2024-10-01'))).toBe(false);
     expect(dateIsTollFreeHoliday(new Date('2024-12-08'))).toBe(false);
+  });
+});
+
+describe('Datetime format validator ', () => {
+  test('isCorrectDateTimeFormat should return true when the timestamp string is valid', () => {
+    expect(isCorrectDateTimeFormat('2024-09-08T06:30:30Z')).toBe(true);
+  });
+  test('isCorrectDateTimeFormat should return false when the timestamp string is invalid', () => {
+    expect(isCorrectDateTimeFormat('2024-09-0806:30:30Z')).toBe(false);
+    expect(isCorrectDateTimeFormat('2024-09-08T06:30:30.000Z')).toBe(false);
   });
 });

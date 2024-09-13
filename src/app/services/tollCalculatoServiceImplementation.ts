@@ -2,60 +2,117 @@ import {
   dateIsOnWeekend,
   dateIsTollFreeHoliday,
   vehicleIsTollFree
-} from '../helpers/validators';
+} from '../utils/validators';
 import { ITollCalculatorService } from './tollCalculatorService';
 
 export class TollCalculatorService implements ITollCalculatorService {
-  private readonly maxTollFee = 60;
+  private readonly maximumFee = 60;
+  private readonly rushHourFee = 18;
+  private readonly mediumFee = 13;
+  private readonly lowestFee = 8;
+  private readonly noFee = 0;
+  private readonly timeRanges = {
+    [this.noFee]: [
+      { from: '00:00:00', to: '05:59:59' },
+      { from: '18:00:00', to: '23:59:59' }
+    ],
+    [this.rushHourFee]: [
+      { from: '07:00:00', to: '07:59:59' },
+      { from: '15:30:00', to: '16:59:59' } // TODO: Assuming this rush hour range is not starting at 15:00, as in the previous implementation which overlaps with one of the medium fee ranges. Making it 15:30 here for now. Will need a verification if it is a correct assumption.
+    ],
+    [this.mediumFee]: [
+      { from: '06:30:00', to: '06:59:59' },
+      { from: '08:00:00', to: '08:29:59' },
+      { from: '15:00:00', to: '15:29:59' },
+      { from: '17:00:00', to: '17:59:59' }
+    ],
+    [this.lowestFee]: [
+      { from: '06:00:00', to: '06:29:59' },
+      { from: '08:30:00', to: '14:59:59' },
+      { from: '18:00:00', to: '18:29:59' }
+    ]
+  };
+
   constructor() {}
-  getTollFee(vehicle: string, dates: Date[]): number {
-    let totalFee = 0;
-    let currentHour = 0; // points to the hour currently calculated. If the next timestamp is within the hour, add the highest fee to the totalFee
-    if (
-      vehicleIsTollFree(vehicle) ||
-      dateIsOnWeekend(dates[0]) ||
-      dateIsTollFreeHoliday(dates[0])
-    )
-      return 0;
 
-    // else:
-    // sort the array of timestamps to make sure they are in ascending order
-    dates.sort((a, b) => {
-      return a < b ? -1 : 1;
-    });
-    console.log({ dates });
-    // check if they are all within one day(?) throw error if not
+  getTollFee(vehicle: string, passByTimeStamps: string[]): number {
+    const passes = passByTimeStamps
+      .map((dateTime: string) => new Date(dateTime))
+      .sort((a: Date, b: Date) => {
+        return a.getTime() - b.getTime();
+      });
 
-    // iterate through dates
-    dates.forEach((date) => {
-      currentHour = date.getHours();
-      totalFee += this.calculateFeeForTimestamp(date);
+    if (this.checkIfNoFee(vehicle, passes)) return this.noFee;
 
-      if (totalFee >= this.maxTollFee) return this.maxTollFee;
-    });
-    // calculateFeeForTimestamp(datetime)
-    // if fee is > maxTollFee return maxTollFee
-    //   - A vehicle should only be charged once an hour
-    //  - In the case of multiple fees in the same hour period, the highest one applies.
+    let currentFee = this.calculateFeeForTime(passes[0]);
+    let previousFee = currentFee;
+    let sameHrLimit = this.getNewHrLimit(passes[0]);
+    let totalFee = currentFee;
+
+    for (let i = 1; i < passes.length; i++) {
+      // A vehicle should only be charged once an hour
+      // In the case of multiple fees in the same hour period, the highest one applies.
+      const currentTime = passes[i];
+      const isWithinSameHour = currentTime <= sameHrLimit;
+      currentFee = this.calculateFeeForTime(currentTime);
+
+      if (isWithinSameHour) {
+        totalFee += currentFee > previousFee ? currentFee : 0;
+      } else {
+        sameHrLimit = this.getNewHrLimit(currentTime);
+        totalFee += currentFee;
+        previousFee = currentFee;
+      }
+
+      if (totalFee >= this.maximumFee) return this.maximumFee;
+    }
 
     return totalFee;
   }
 
-  protected calculateFeeForTimestamp = (timestamp: Date): number => {
-    // Rush hour:
-    // 18 kr  07:00 - 07:59
-    //        15:00 - 16:59
+  private getNewHrLimit = (date: Date) => {
+    let newLimit = new Date(date);
+    newLimit.setHours(date.getHours() + 1);
+    return newLimit;
+  };
 
-    // 13 kr  06:30 - 06:59
-    //        08:00 - 08:29
-    //        15:00 - 15:29
-    //        17:00 - 18:00
+  private checkIfNoFee = (vehicle: string, passes: Date[]) => {
+    return (
+      passes.length === 0,
+      vehicleIsTollFree(vehicle) ||
+        dateIsOnWeekend(passes[0]) ||
+        dateIsTollFreeHoliday(passes[0])
+    );
+  };
 
-    // 8 kr   06:00 - 06:29
-    //        08:30 - 14:59
-    //        18:00 - 18:29
+  private calculateFeeForTime = (timeStamp: Date): number => {
+    const date = timeStamp.toISOString().substring(0, 10) + 'T';
+    let fee = 0;
 
-    // 0      18:30 - 05:59
-    return 0;
+    for (const [keyFee, valueRanges] of Object.entries(this.timeRanges)) {
+      valueRanges.forEach((range) => {
+        if (
+          this.timeIsWithinRange(timeStamp, {
+            from: new Date(`${date}${range.from}Z`),
+            to: new Date(`${date}${range.to}Z`)
+          })
+        ) {
+          fee = +keyFee;
+        }
+      });
+    }
+
+    return fee;
+  };
+
+  private timeIsWithinRange = (
+    timeStamp: Date,
+    range: { from: Date; to: Date }
+  ) => {
+    console.log({ timeStamp, range });
+    return (
+      timeStamp.getTime() >= range.from.getTime() &&
+      timeStamp.getTime() <= range.to.getTime()
+    );
   };
 }

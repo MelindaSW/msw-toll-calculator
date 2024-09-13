@@ -1,36 +1,50 @@
 import express, { Request, Response, Router } from 'express';
 import { TollCalculatorController } from '../controllers/tollCalculatorController';
 import { TollCalculatorService } from '../services/tollCalculatoServiceImplementation';
-import { vehicleIsValid } from "../helpers/validators";
-import { allVehicles } from "../types/vehicleTypes";
-import { isCorrectDateTimeFormat } from "../helpers/dateTimeHelpers";
+import { vehicleIsValid } from '../utils/validators';
+import { allVehicles } from '../types/vehicleTypes';
+import { isCorrectDateTimeFormat } from '../utils/validators';
+import { ErrorResponseBody } from '../types/responseTypes';
 
 const router = Router();
 router.use(express.json());
 const controller = new TollCalculatorController(new TollCalculatorService());
 
-router.use("/calculateTollFee", (req, res, next) => {
-  if (!vehicleIsValid(req.body.vehicle)) {
-    throw new Error(
-      `The vehicle is not valid. It should be one of ${allVehicles.join(", ")}.`
-    );
-  }
+router.use('/calculateTollFee', (req, res, next) => {
+  const isNotValidVehicle = !vehicleIsValid(req.body.vehicle);
+  const isNotValidTimeStampFormat = req.body.dates.some(
+    (date: string) => !isCorrectDateTimeFormat(date)
+  );
+  const errorResponse: ErrorResponseBody = {
+    requestUrl: req.url,
+    status: 422,
+    message: ''
+  };
 
-  req.body.dates.forEach((date: string) => {
-    if (!isCorrectDateTimeFormat(date)) {
-      throw new Error(
-        `Provided timestamp is not correct format. They should be one of following: YYYY-MM-DDTHH:mm:ss.ssZ or YYYY-MM-DDTHH:mm:ssZ`
-      );
-    }
-  });
-  next();
+  if (isNotValidVehicle) {
+    res.status(errorResponse.status);
+    res.send({
+      ...errorResponse,
+      message: `The vehicle is not valid. It should be one of ${allVehicles.join(
+        ', '
+      )}.`
+    });
+  } else if (isNotValidTimeStampFormat) {
+    res.status(errorResponse.status);
+    res.send({
+      ...errorResponse,
+      message: `Timestamp format not accepted. Correct format should be YYYY-MM-DDTHH:mm:ssZ`
+    });
+  } else {
+    next();
+  }
 });
 
 /**
  * @swagger
  * tags:
  *  - name: Tollcalculator
- *    description: Endpoint for calculating toll fees based on date and time of passing. Vehicle type should be one of Car, Motorbike, Diplomat, Tractor, Foreign, Military or Emergency
+ *    description: Endpoint for calculating toll fees based on date and time of passing. Vehicle type should be one of Car, Motorbike, Diplomat, Tractor, Foreign, Military or Emergency. Timestamp should be of format YYYY-MM-DDTHH:mm:ssZ.
  */
 
 /**
@@ -46,6 +60,7 @@ router.use("/calculateTollFee", (req, res, next) => {
  *         dates:
  *           type: array
  *           items:
+ *             minItems: 1
  *             type: date-time
  *             example: '2022-12-08T07:32:28Z, 2022-12-08T08:30:20Z, 2022-12-08T16:45:02Z'
  *     TollFeeResponse:

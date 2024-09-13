@@ -3,8 +3,7 @@ import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './config/swaggerConfig';
 import tollCalculatorRoute from './routes/tollCalculatorRoute';
-import { errorResponseHandler } from './helpers/errorHelpers';
-import { logIncomingRequest } from './helpers/logHelpers';
+import { logIncomingRequest } from './utils/logging';
 
 const app: Application = express();
 const PORT = process.env.PORT || 8080;
@@ -20,11 +19,6 @@ const startApplication = () => {
   });
 
   app.use('/api', tollCalculatorRoute);
-
-  // Error handling middleware
-  app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-    errorResponseHandler(err, req, res);
-  });
 
   app.listen(PORT, () => {
     console.log(`Server Running here 👉 http://localhost:${PORT}`);

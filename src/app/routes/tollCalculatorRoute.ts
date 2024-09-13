@@ -11,34 +11,38 @@ router.use(express.json());
 const controller = new TollCalculatorController(new TollCalculatorService());
 
 router.use('/calculatetollfee', (req, res, next) => {
-  const isNotValidVehicle = !vehicleIsValid(req.body.vehicle);
-  const isNotValidTimeStampFormat =
-    req.body.dates.length > 0
-      ? req.body.dates.some((date: string) => !isCorrectDateTimeFormat(date))
-      : false;
-
   const errorResponse: ErrorResponseBody = {
-    requestUrl: req.url,
+    requestUrl: '/calculatetollfee',
     status: 422,
     message: ''
   };
 
-  if (isNotValidVehicle) {
-    res.status(errorResponse.status);
-    res.send({
-      ...errorResponse,
-      message: `The vehicle is not valid. It should be one of ${allVehicles.join(
-        ', '
-      )}.`
-    });
-  } else if (isNotValidTimeStampFormat) {
-    res.status(errorResponse.status);
-    res.send({
-      ...errorResponse,
-      message: `Timestamp format not accepted. Correct format should be YYYY-MM-DDTHH:mm:ssZ`
-    });
+  if (req.body.dates && req.body.vehicle && req.body.dates.length > 0) {
+    if (!vehicleIsValid(req.body.vehicle)) {
+      res.status(errorResponse.status);
+      res.send({
+        ...errorResponse,
+        message: `The vehicle is not valid. It should be one of ${allVehicles.join(
+          ', '
+        )}.`
+      });
+    } else if (
+      req.body.dates.some((date: string) => !isCorrectDateTimeFormat(date))
+    ) {
+      res.status(errorResponse.status);
+      res.send({
+        ...errorResponse,
+        message: `Timestamp format not accepted. Correct format should be YYYY-MM-DDTHH:mm:ssZ`
+      });
+    } else {
+      next();
+    }
   } else {
-    next();
+    res.status(errorResponse.status);
+    res.send({
+      ...errorResponse,
+      message: `Invalid request body. Missing one or several attributes.`
+    });
   }
 });
 

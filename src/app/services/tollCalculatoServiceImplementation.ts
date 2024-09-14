@@ -1,7 +1,7 @@
 import { incrementHours, timeIsWithinRange } from '../utils/dateAndTime';
 import {
   dateIsOnWeekend,
-  dateIsTollFreeHoliday,
+  dateIsFeeFreeHoliday,
   vehicleIsTollFree
 } from '../utils/validators';
 import { ITollCalculatorService } from './tollCalculatorService';
@@ -76,20 +76,20 @@ export class TollCalculatorService implements ITollCalculatorService {
       passes.length === 0,
       vehicleIsTollFree(vehicle) ||
         dateIsOnWeekend(passes[0]) ||
-        dateIsTollFreeHoliday(passes[0])
+        dateIsFeeFreeHoliday(passes[0])
     );
   };
 
   private calculateFeeForTime = (timeStamp: Date): number => {
-    const date = timeStamp.toISOString().substring(0, 10) + 'T';
+    const date = timeStamp.toISOString().substring(0, 10);
     let fee = 0;
 
     for (const [keyFee, valueRanges] of Object.entries(this.timeRanges)) {
       valueRanges.forEach((range) => {
         if (
           timeIsWithinRange(timeStamp, {
-            from: new Date(`${date}${range.from}Z`),
-            to: new Date(`${date}${range.to}Z`)
+            from: new Date(`${date}T${range.from}Z`),
+            to: new Date(`${date}T${range.to}Z`)
           })
         ) {
           fee = +keyFee;

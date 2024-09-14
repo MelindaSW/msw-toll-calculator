@@ -1,6 +1,6 @@
 import { describe, expect, test } from '@jest/globals';
 import { TollCalculatorService } from './tollCalculatoServiceImplementation';
-import { tollFreeVehicle } from '../types/vehicleTypes';
+import { feeFreeVehicles } from '../types/vehicleTypes';
 
 const tollCalculator = new TollCalculatorService();
 const maximumFee = 60;
@@ -11,7 +11,7 @@ const noFee = 0;
 
 describe('TollCalculator should return 0 for ', () => {
   test('toll free vehicles', () => {
-    tollFreeVehicle.forEach((vehicle) => {
+    feeFreeVehicles.forEach((vehicle) => {
       expect(tollCalculator.getTollFee(vehicle, ['2024-09-09T06:30:30Z'])).toBe(
         noFee
       );

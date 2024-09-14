@@ -1,5 +1,5 @@
-const tolledVehicle = ['Car'] as const;
-const tollFreeVehicle = [
+const vehicleWithFees = ['Car'] as const;
+const feeFreeVehicles = [
   'Tractor',
   'Diplomat',
   'Foreign',
@@ -17,17 +17,17 @@ const allVehicles = [
   'Motorbike'
 ] as const;
 
-type TolledVehicle = (typeof tolledVehicle)[number];
+type VehicleWithFee = (typeof vehicleWithFees)[number];
 
-type TollFreeVehicle = (typeof tollFreeVehicle)[number];
+type FeeFreeVehicle = (typeof feeFreeVehicles)[number];
 
 type Vehicle = (typeof allVehicles)[number];
 
 export {
-  TolledVehicle,
-  TollFreeVehicle,
+  VehicleWithFee,
+  FeeFreeVehicle,
   Vehicle,
   allVehicles,
-  tolledVehicle,
-  tollFreeVehicle
+  vehicleWithFees,
+  feeFreeVehicles
 };

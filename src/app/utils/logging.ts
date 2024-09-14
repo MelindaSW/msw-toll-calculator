@@ -11,7 +11,7 @@ const logOutgoingResponse = (
   responseBody: TollCalculatorResponse
 ) => {
   const time = new Date(Date.now()).toString();
-  console.log(time, url, responseBody);
+  console.log('Toll calculated: ', time, url, responseBody);
 };
 
 export { logIncomingRequest, logOutgoingResponse };

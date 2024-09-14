@@ -1,3 +1,3 @@
 export interface ITollCalculatorService {
-  getTollFee: (vehicle: string, passByTimeStamps: string[]) => number;
+  getTollFee: (vehicle: string, passingDateTimes: string[]) => number;
 }

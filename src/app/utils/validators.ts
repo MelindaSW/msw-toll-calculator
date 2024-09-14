@@ -1,10 +1,10 @@
 import Holidays from 'date-holidays';
 import {
   allVehicles,
-  tolledVehicle,
-  TolledVehicle,
-  tollFreeVehicle,
-  TollFreeVehicle,
+  vehicleWithFees,
+  feeFreeVehicles,
+  FeeFreeVehicle,
+  VehicleWithFee,
   Vehicle
 } from '../types/vehicleTypes';
 
@@ -14,12 +14,12 @@ const vehicleIsValid = (vehicle: any): vehicle is Vehicle => {
   return allVehicles.includes(vehicle);
 };
 
-const vehicleIsTollFree = (vehicle: any): vehicle is TollFreeVehicle => {
-  return tollFreeVehicle.includes(vehicle);
+const vehicleIsTollFree = (vehicle: any): vehicle is FeeFreeVehicle => {
+  return feeFreeVehicles.includes(vehicle);
 };
 
-const vehicleIsTolled = (vehicle: any): vehicle is TolledVehicle => {
-  return tolledVehicle.includes(vehicle);
+const vehicleIsTolled = (vehicle: any): vehicle is VehicleWithFee => {
+  return vehicleWithFees.includes(vehicle);
 };
 
 const dateIsOnWeekend = (date: Date) => {
@@ -28,7 +28,7 @@ const dateIsOnWeekend = (date: Date) => {
   return date.getDay() === saturday || date.getDay() === sunday;
 };
 
-const dateIsTollFreeHoliday = (date: Date) => {
+const dateIsFeeFreeHoliday = (date: Date) => {
   const isMonthOfJuly = date.getMonth() === 6;
   const isNationalHoliday = holidays.isHoliday(date) !== false;
   return isMonthOfJuly || isNationalHoliday;
@@ -44,6 +44,6 @@ export {
   vehicleIsTollFree,
   vehicleIsTolled,
   dateIsOnWeekend,
-  dateIsTollFreeHoliday,
+  dateIsFeeFreeHoliday,
   isCorrectDateTimeFormat
 };

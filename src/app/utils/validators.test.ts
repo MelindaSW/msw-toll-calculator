@@ -1,7 +1,7 @@
 import { describe, expect, test } from '@jest/globals';
 import {
   dateIsOnWeekend,
-  dateIsTollFreeHoliday,
+  dateIsFeeFreeHoliday,
   isCorrectDateTimeFormat,
   vehicleIsTolled,
   vehicleIsTollFree,
@@ -9,8 +9,8 @@ import {
 } from './validators';
 import {
   allVehicles,
-  tolledVehicle,
-  tollFreeVehicle
+  vehicleWithFees,
+  feeFreeVehicles
 } from '../types/vehicleTypes';
 
 const swedishNationalHolidays2024 = [
@@ -45,7 +45,7 @@ describe('Vehicle validator ', () => {
   });
 
   test('vehicleIsTollFree should return true when the parameter is of type TollFreeVehicle', () => {
-    tollFreeVehicle.forEach((v) => {
+    feeFreeVehicles.forEach((v) => {
       expect(vehicleIsTollFree(v)).toBe(true);
     });
   });
@@ -55,7 +55,7 @@ describe('Vehicle validator ', () => {
   });
 
   test('vehicleIsTolled should return true when the parameter is of type TolledVehicle', () => {
-    tolledVehicle.forEach((v) => {
+    vehicleWithFees.forEach((v) => {
       expect(vehicleIsTolled(v)).toBe(true);
     });
   });
@@ -85,20 +85,20 @@ describe('Weekend validator ', () => {
 describe('Holiday validator ', () => {
   test('dateIsTollFreeHoliday should return true when the parameter is on a holiday', () => {
     swedishNationalHolidays2024.forEach((date) => {
-      expect(dateIsTollFreeHoliday(new Date(date))).toBe(true);
+      expect(dateIsFeeFreeHoliday(new Date(date))).toBe(true);
     });
   });
 
   test('dateIsTollFreeHoliday should return true when the date is within the month of July', () => {
-    expect(dateIsTollFreeHoliday(new Date('2024-07-01'))).toBe(true);
-    expect(dateIsTollFreeHoliday(new Date('2024-07-29'))).toBe(true);
+    expect(dateIsFeeFreeHoliday(new Date('2024-07-01'))).toBe(true);
+    expect(dateIsFeeFreeHoliday(new Date('2024-07-29'))).toBe(true);
   });
 
   test('dateIsHoliday should return false when the parameter is not on a holiday and not in the month of July', () => {
-    expect(dateIsTollFreeHoliday(new Date('2024-06-23'))).toBe(false);
-    expect(dateIsTollFreeHoliday(new Date('2024-08-11'))).toBe(false);
-    expect(dateIsTollFreeHoliday(new Date('2024-10-01'))).toBe(false);
-    expect(dateIsTollFreeHoliday(new Date('2024-12-08'))).toBe(false);
+    expect(dateIsFeeFreeHoliday(new Date('2024-06-23'))).toBe(false);
+    expect(dateIsFeeFreeHoliday(new Date('2024-08-11'))).toBe(false);
+    expect(dateIsFeeFreeHoliday(new Date('2024-10-01'))).toBe(false);
+    expect(dateIsFeeFreeHoliday(new Date('2024-12-08'))).toBe(false);
   });
 });
 
